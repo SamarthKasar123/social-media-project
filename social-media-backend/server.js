@@ -10,8 +10,13 @@ const app = express();
 // Middleware
 app.use(cors({
   origin: ['https://socialmediain.netlify.app', 'http://localhost:3000'],
-  credentials: true
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  credentials: true,
+  maxAge: 86400 // 24 hours
 }));
+
+app.options('*', cors());
 app.use(express.json());
 
 // Configure Cloudinary
