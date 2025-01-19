@@ -8,34 +8,8 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: 'https://socialmediain.netlify.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true
-}));
-
+app.use(cors());
 app.use(express.json());
-
-app.get('/api/test', (req, res) => {
-  res.json({ message: 'Server is working!' });
-});
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://socialmediain.netlify.app');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Handle OPTIONS method
-  if (req.method === 'OPTIONS') {
-      return res.status(200).json({
-          body: "OK"
-      });
-  }
-  
-  next();
-});
 
 // Configure Cloudinary
 cloudinary.config({
@@ -47,9 +21,7 @@ cloudinary.config({
 // Configure PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 // Configure Multer for file uploads
@@ -150,17 +122,7 @@ app.get('/api/submissions', async (req, res) => {
   }
 });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ 
-    error: 'Internal Server Error',
-    message: err.message 
-  });
-});
-
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-module.exports = app;
