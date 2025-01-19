@@ -8,16 +8,18 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-const corsOptions = {
-  origin: ['https://socialmediain.netlify.app', 'http://localhost:3000'],
+app.use(cors({
+  origin: 'https://socialmediain.netlify.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  credentials: true,
-  maxAge: 86400
-};
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+  credentials: true
+}));
+
 app.use(express.json());
+
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Server is working!' });
+});
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'https://socialmediain.netlify.app');
@@ -146,6 +148,14 @@ app.get('/api/submissions', async (req, res) => {
     console.error('Error fetching submissions:', err);
     res.status(500).json({ error: 'Failed to fetch submissions' });
   }
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    error: 'Internal Server Error',
+    message: err.message 
+  });
 });
 
 const PORT = process.env.PORT || 3001;
