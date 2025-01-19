@@ -8,7 +8,10 @@ require('dotenv').config();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://socialmediain.netlify.app/', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Configure Cloudinary
